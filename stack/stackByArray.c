@@ -6,6 +6,11 @@
 #include<stdlib.h>
 #include"stackByArray.h"
 
+int popStackArray(pStackArray stack, stackDataType *buf);
+int pushStackArray(pStackArray stack, stackDataType data);
+int isEmptyStackArray(pStackArray stack);
+int isFullStackArray(pStackArray stack);
+
 int popStackArray(pStackArray stack, stackDataType *buf)
 {
 	if(isEmptyStackArray(stack) == 1){
@@ -55,6 +60,10 @@ pStackArray createStackArray(int max)
 		free(stack);
 		return NULL;
 	}
+	stack->pop = popStackArray;
+	stack->push = pushStackArray;
+	stack->isEmpty = isEmptyStackArray;
+	stack->isFull = isFullStackArray;
 	return stack;
 }
 
@@ -63,14 +72,14 @@ int main()
 	pStackArray stack = createStackArray(10);
 	stackDataType i = 0;
 	for(i = 36; i < 50; i++){
-		if(0 != pushStackArray(stack, i))
+		if(0 != stack->push(stack, i))
 			printf("push %d failed\n", i);
 		else
 			printf("push %d\n", i);
 	}
 	stackDataType buf;
 	while(1){
-		if(0 != popStackArray(stack, &buf))
+		if(0 != stack->pop(stack, &buf))
 			break;
 		else
 			printf("pop %d\n", buf);

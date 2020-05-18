@@ -3,19 +3,19 @@
 	>c++ Created Time: 2020年05月12日 星期二 15时16分39秒
  ************************************************************************/
 
-typedef struct stackLinklist{
+typedef struct stackNode{
 	void *data;
-	struct stackLinklist* next;
-}*stackLinklist;
+	struct stackNode* next;
+}*pStackNode;
 
-typedef struct stackLinklistTop{
+typedef struct stackLinklist{
 	unsigned int max;
 	unsigned int count;
-	stackLinklist top;
-}*stackLinklistTop;
+	pStackNode top;
+	void *(*pop)(struct stackLinklist *stack);
+	int (*push)(struct stackLinklist *stack, void *data);
+	int (*isEmpty)(struct stackLinklist *stack);
+	int (*isFull)(struct stackLinklist *stack);
+}*pStackLinklist;
 
-void *popStackLinklist(stackLinklistTop stack);
-int pushStackLinklist(stackLinklistTop stack, void *data);
-int isEmptyStackLinklist(stackLinklistTop stack);
-int isFullStackLinklist(stackLinklistTop stack);
-stackLinklistTop createStackLinklist(unsigned int max);
+pStackLinklist createStackLinklist(unsigned int max);
