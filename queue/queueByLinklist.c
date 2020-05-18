@@ -6,6 +6,11 @@
 #include<stdlib.h>
 #include"queueByLinklist.h"
 
+int addToQueueLinklist(pQueueLinklist queue, void *data);
+void *deleteFromQueueLinklist(pQueueLinklist queue);
+int isEmptyInQueueLinklist(pQueueLinklist queue);
+int isFullInQueueLinklist(pQueueLinklist queue);
+
 int addToQueueLinklist(pQueueLinklist queue, void *data)
 {
 	if(1 == isFullInQueueLinklist(queue)){
@@ -73,23 +78,27 @@ pQueueLinklist createQueueLinklist(int max)
 	queue->max = max;
 	queue->count = 0;
 	queue->front = queue->rear = NULL;
+	queue->push = addToQueueLinklist;
+	queue->pop = deleteFromQueueLinklist;
+	queue->isEmpty = isEmptyInQueueLinklist;
+	queue->isFull = isFullInQueueLinklist;
 	return queue;
 }
 
-int test()
+int main()
 {
 	pQueueLinklist q = createQueueLinklist(100);
 	int i = 0;
 	for(;i < 200; i++){
 		int *d = (int *)malloc(sizeof(int));
 		*d = i;
-		if(addToQueueLinklist(q, d) < 0){
+		if(q->push(q, d) < 0){
 			free(d);
 		}
 	}
 	for(i = 0;i < 200; i++){
 		void *d = NULL;
-		if((d = deleteFromQueueLinklist(q)) != NULL){
+		if((d = q->pop(q)) != NULL){
 			printf("data is %d\n", *(int *)d);
 			free(d);
 		}

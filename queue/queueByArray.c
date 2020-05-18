@@ -6,6 +6,11 @@
 #include<stdlib.h>
 #include"queueByArray.h"
 
+int putInQueueArray(pQueueArray queue, int number, queueDataType *data);
+int getQueueArray(pQueueArray queue, int number, queueDataType *buf);
+int isEmptyQueueArray(pQueueArray queue);
+int isFullQueueArray(pQueueArray queue);
+
 int putInQueueArray(pQueueArray queue, int number, queueDataType *data)
 {
 	if(1 == isFullQueueArray(queue)){
@@ -77,6 +82,10 @@ pQueueArray createQueueArray(int max)
 		free(queue);
 		return NULL;
 	}
+	queue->push = putInQueueArray;
+	queue->pop = getQueueArray;
+	queue->isEmpty = isEmptyQueueArray;
+	queue->isFull = isFullQueueArray;
 	return queue;
 }
 int main()
@@ -84,14 +93,14 @@ int main()
 	pQueueArray q = createQueueArray(15);
 	int i = 0;
 	for(;i < 20; i++){
-		if(putInQueueArray(q, 1, &i) < 0){
+		if(q->push(q, 1, &i) < 0){
 			printf("%d put failed\n", i);
 		}
 	}
 	int n = 100;
 	queueDataType buf[n];
 	while(1){
-		if(0 >= getQueueArray(q, 10, buf))
+		if(0 >= q->pop(q, 10, buf))
 			break;
 		else
 			for(i = 0; i < 10; i++)

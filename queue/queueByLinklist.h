@@ -13,10 +13,10 @@ typedef struct queueLinklist{
 	unsigned int count;	//队列当前数据量
 	pQueueNode front;	//队列数据头，从这里取出数据
 	pQueueNode rear;	//队列数据尾，从这里加入数据
+	int (*push)(struct queueLinklist *queue, void *data);
+	void *(*pop)(struct queueLinklist *queue);
+	int (*isEmpty)(struct queueLinklist *queue);
+	int (*isFull)(struct queueLinklist *queue);
 }*pQueueLinklist;
 
-int addToQueueLinklist(pQueueLinklist queue, void *data);
-void *deleteFromQueueLinklist(pQueueLinklist queue);
-int isEmptyInQueueLinklist(pQueueLinklist queue);
-int isFullInQueueLinklist(pQueueLinklist queue);
 pQueueLinklist createQueueLinklist(int max);
