@@ -59,10 +59,12 @@ int isFullInQueueLinklist(pQueueLinklist queue)
 
 pQueueLinklist createQueueLinklist(int max)
 {
+	/*
 	if(max <= 0){
 		printf("max num must > 0\n");
 		return NULL;
 	}
+	*/
 	pQueueLinklist queue = (pQueueLinklist)malloc(sizeof(struct queueLinklist));
 	if(queue == NULL){
 		printf("no memory when create queue\n");
@@ -74,7 +76,7 @@ pQueueLinklist createQueueLinklist(int max)
 	return queue;
 }
 
-int main()
+int test()
 {
 	pQueueLinklist q = createQueueLinklist(100);
 	int i = 0;
