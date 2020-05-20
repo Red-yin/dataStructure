@@ -5,7 +5,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"binaryTree.h"
-#include"../queue/queueByLinklist.h"
+#include"queueByLinklist.h"
 
 //检查二叉树的平衡，如果树平衡，返回NULL;如果树不平衡，返回最下层不平衡的节点
 int checkBinaryTreeBlance(pBinaryTreeNode node)
@@ -18,20 +18,20 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 		printf("queue create failed\n");
 		return -1000;
 	}
-	addToQueueLinklist(q1, (void *)node->left);
-	addToQueueLinklist(q2, (void *)node->right);
+	q1->push(q1, (void *)node->left);
+	q2->push(q2, (void *)node->right);
 	count1[1]++;
 	pBinaryTreeNode t1 = NULL, t2 = NULL;
 	while(1){
-		t1 = deleteFromQueueLinklist(q1);
+		t1 = q1->pop(q1);
 		if(t1){
 			count1[1]--;
 			if(t1->left){
-				addToQueueLinklist(q1, (void *)t1->left);
+				q1->push(q1, (void *)t1->left);
 				count1[2]++;
 			}
 			if(t1->right){
-				addToQueueLinklist(q1, (void *)t1->right);
+				q1->push(q1, (void *)t1->right);
 				count1[2]++;
 			}
 			if(count1[1] == 0){
@@ -40,15 +40,15 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 				left++;
 			}
 		}
-		t2 = deleteFromQueueLinklist(q2);
+		t2 = q2->pop(q2);
 		if(t2){
 			count2[1]--;
 			if(t2->left){
-				addToQueueLinklist(q2, (void *)t2->left);
+				q2->push(q2, (void *)t2->left);
 				count2[2]++;
 			}
 			if(t2->right){
-				addToQueueLinklist(q2, (void *)t2->right);
+				q2->push(q2, (void *)t2->right);
 				count2[2]++;
 			}
 			if(count2[1] == 0){
@@ -57,7 +57,7 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 				right++;
 			}
 		}
-		if(isEmptyInQueueLinklist(q1) && isEmptyInQueueLinklist(q2))
+		if(q1->isEmpty(q1) && q2->isEmpty(q2))
 			break;
 	}
 	return left-right;
@@ -236,33 +236,5 @@ void travelBinaryTree(pBinaryTreeNode node)
 		travelBinaryTree(node->left);
 		printf("%d\t", node->data);
 		travelBinaryTree(node->right);
-	}
-}
-
-int main()
-{
-	printf("print tree: pp\ndelete node: d num\nadd node:anum\nquit: qq\n");
-	pBinaryTree tree = createBinaryTree();
-	char handle = 0;
-	int data = 0;
-	while(1){
-		printf("input:\n");
-		scanf("%c%d", &handle, &data);
-		printf("handle: %c, data: %d\n", handle, data);
-		switch(handle){
-			case 'p':
-				travelBinaryTree(tree->root);
-				printf("\n");
-				break;
-			case 'd':
-				deleteBinaryTreeNode(tree, data);
-				break;
-			case 'a':
-				insertBinaryTreeNode(tree, data);
-				break;
-			case 'q':
-				exit(0);
-				break;
-		}
 	}
 }

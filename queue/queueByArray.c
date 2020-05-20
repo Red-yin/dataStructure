@@ -88,25 +88,4 @@ pQueueArray createQueueArray(int max)
 	queue->isFull = isFullQueueArray;
 	return queue;
 }
-int main()
-{
-	pQueueArray q = createQueueArray(15);
-	int i = 0;
-	for(;i < 20; i++){
-		if(q->push(q, 1, &i) < 0){
-			printf("%d put failed\n", i);
-		}
-	}
-	int n = 100;
-	queueDataType buf[n];
-	while(1){
-		if(0 >= q->pop(q, 10, buf))
-			break;
-		else
-			for(i = 0; i < 10; i++)
-				printf("get %d\n", buf[i]);
-	}
-	return 0;
 
-
-}

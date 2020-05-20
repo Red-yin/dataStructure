@@ -85,24 +85,3 @@ pQueueLinklist createQueueLinklist(int max)
 	return queue;
 }
 
-int main()
-{
-	pQueueLinklist q = createQueueLinklist(100);
-	int i = 0;
-	for(;i < 200; i++){
-		int *d = (int *)malloc(sizeof(int));
-		*d = i;
-		if(q->push(q, d) < 0){
-			free(d);
-		}
-	}
-	for(i = 0;i < 200; i++){
-		void *d = NULL;
-		if((d = q->pop(q)) != NULL){
-			printf("data is %d\n", *(int *)d);
-			free(d);
-		}
-	}
-	return 0;
-	
-}

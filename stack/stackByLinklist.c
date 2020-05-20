@@ -68,24 +68,3 @@ pStackLinklist createStackLinklist(unsigned int max)
 	stack->isFull = isFullStackLinklist;
 	return stack;
 }
-
-int main()
-{
-	pStackLinklist s = createStackLinklist(100);
-	int i = 0;
-	for(;i < 200; i++){
-		int *d = (int *)malloc(sizeof(int));
-		*d = i;
-		if(s->push(s, d) < 0){
-			free(d);
-		}
-	}
-	for(i = 0;i < 200; i++){
-		void *d = NULL;
-		if((d = s->pop(s)) != NULL){
-			printf("data is %d\n", *(int *)d);
-			free(d);
-		}
-	}
-	return 0;
-}

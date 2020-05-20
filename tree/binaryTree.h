@@ -19,4 +19,5 @@ int deleteBinaryTreeNode(pBinaryTree tree, int data);
 pBinaryTreeNode findBinaryTreeNode(pBinaryTree tree, int data);
 int isEmptyBinaryTree(pBinaryTree tree);
 pBinaryTree createBinaryTree();
+void travelBinaryTree(pBinaryTreeNode node);
 

@@ -67,22 +67,3 @@ pStackArray createStackArray(int max)
 	return stack;
 }
 
-int main()
-{
-	pStackArray stack = createStackArray(10);
-	stackDataType i = 0;
-	for(i = 36; i < 50; i++){
-		if(0 != stack->push(stack, i))
-			printf("push %d failed\n", i);
-		else
-			printf("push %d\n", i);
-	}
-	stackDataType buf;
-	while(1){
-		if(0 != stack->pop(stack, &buf))
-			break;
-		else
-			printf("pop %d\n", buf);
-	}
-	return 0;
-}
