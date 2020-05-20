@@ -109,6 +109,7 @@ int testBinaryTree()
 			case 'p':
 				travelBinaryTreeInLevel(tree->root);
 				printf("\n");
+				travelBinaryTreeInMidorder(tree->root);
 				break;
 			case 'd':
 				deleteBinaryTreeNode(tree, data);

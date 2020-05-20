@@ -7,7 +7,7 @@
 #include"binaryTree.h"
 #include"queueByLinklist.h"
 
-//检查二叉树的平衡，如果树平衡，返回NULL;如果树不平衡，返回最下层不平衡的节点
+//检查二叉树的平衡，返回左子树的深度-右子树的深度
 int checkBinaryTreeBlance(pBinaryTreeNode node)
 {
 	int bf = 0, count1[2] = {0}, count2[2] = {0};
@@ -31,15 +31,15 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 			count1[1]--;
 			if(t1->left){
 				q1->push(q1, (void *)t1->left);
-				count1[2]++;
+				count1[0]++;
 			}
 			if(t1->right){
 				q1->push(q1, (void *)t1->right);
-				count1[2]++;
+				count1[0]++;
 			}
 			if(count1[1] == 0){
-				count1[1] = count1[2];
-				count1[2] = 0;
+				count1[1] = count1[0];
+				count1[0] = 0;
 				left++;
 			}
 		}
@@ -48,15 +48,15 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 			count2[1]--;
 			if(t2->left){
 				q2->push(q2, (void *)t2->left);
-				count2[2]++;
+				count2[0]++;
 			}
 			if(t2->right){
 				q2->push(q2, (void *)t2->right);
-				count2[2]++;
+				count2[0]++;
 			}
 			if(count2[1] == 0){
-				count2[1] = count2[2];
-				count2[2] = 0;
+				count2[1] = count2[0];
+				count2[0] = 0;
 				right++;
 			}
 		}
@@ -65,9 +65,6 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 	}
 	destoryQueueLinklist(&q1);
 	destoryQueueLinklist(&q2);
-		printf("--%s--%d--\n", __func__, __LINE__);
-	printf("left depth: %d, right depth: %d\n", left, right);
-		printf("--%s--%d--\n", __func__, __LINE__);
 	return (left - right);
 }
 
@@ -255,11 +252,12 @@ void travelBinaryTreeInLevel(pBinaryTreeNode node)
 {
 	if(node){
 		pQueueLinklist q = createQueueLinklist(-1);
-		int count_push = 0, count_pop = 0;
+		int count_push = 0, count_pop = 0, level = 0;
 		q->push(q, (void *)node);
-		count_push++;
-		count_pop = count_push;
+		count_pop = 1;
+		count_push = 0;
 		pBinaryTreeNode tmp = NULL;
+		printf("level[%d]\t", level);
 		while(1){
 			tmp = q->pop(q);
 			if(tmp == NULL){
@@ -276,10 +274,11 @@ void travelBinaryTreeInLevel(pBinaryTreeNode node)
 				count_push++;
 			}
 			if(count_pop == 0){
-				printf("\n");
 				count_pop = count_push;
+				count_push = 0;
+				printf("\nlevel[%d]\t", ++level);
 			}
 		}
-
+		destoryQueueLinklist(&q);
 	}
 }

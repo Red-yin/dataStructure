@@ -11,7 +11,7 @@ TARGET_SHARE_LIBS = $(BASE_LIB).so
 BASE_LIBS_FILES = queueByArray.c queueByLinklist.c stackByArray.c stackByLinklist.c binaryTree.c
 CP = cp -r
 RM = rm -r
-CC = gcc -g
+CC = gcc -Werror
 AR = ar rcs
 
 VPATH = ./compile
