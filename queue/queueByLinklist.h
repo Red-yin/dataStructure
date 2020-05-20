@@ -20,3 +20,4 @@ typedef struct queueLinklist{
 }*pQueueLinklist;
 
 pQueueLinklist createQueueLinklist(int max);
+void destoryQueueLinklist(pQueueLinklist *queue);

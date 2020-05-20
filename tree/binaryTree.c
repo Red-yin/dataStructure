@@ -12,6 +12,8 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 {
 	int bf = 0, count1[2] = {0}, count2[2] = {0};
 	int left = 0, right = 0;
+	if(node == NULL)
+		return -1;
 	pQueueLinklist q1 = createQueueLinklist(-1);
 	pQueueLinklist q2 = createQueueLinklist(-1);
 	if(q1 == NULL || q2 == NULL){
@@ -21,6 +23,7 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 	q1->push(q1, (void *)node->left);
 	q2->push(q2, (void *)node->right);
 	count1[1]++;
+	count2[1]++;
 	pBinaryTreeNode t1 = NULL, t2 = NULL;
 	while(1){
 		t1 = q1->pop(q1);
@@ -60,7 +63,12 @@ int checkBinaryTreeBlance(pBinaryTreeNode node)
 		if(q1->isEmpty(q1) && q2->isEmpty(q2))
 			break;
 	}
-	return left-right;
+	destoryQueueLinklist(&q1);
+	destoryQueueLinklist(&q2);
+		printf("--%s--%d--\n", __func__, __LINE__);
+	printf("left depth: %d, right depth: %d\n", left, right);
+		printf("--%s--%d--\n", __func__, __LINE__);
+	return (left - right);
 }
 
 void LLrotate(pBinaryTree tree, pBinaryTreeNode imblanceNode)
@@ -156,6 +164,10 @@ int deleteBinaryTreeNode(pBinaryTree tree, int data)
 		printf("%d is not exist\n", data);
 		return -1;
 	}
+	printf("--%s--%d--\n", __func__, __LINE__);
+	int a = checkBinaryTreeBlance(tree->root);
+	printf("tree depth: %d\n", a);
+	printf("--%s--%d--\n", __func__, __LINE__);
 	pBinaryTreeNode fNode = findFatherNode(tree, data);
 	int numSons = ((dNode->left != NULL) + (dNode->right != NULL));
 	switch(numSons){
@@ -230,11 +242,44 @@ pBinaryTree createBinaryTree()
 	return tree;
 }
 
-void travelBinaryTree(pBinaryTreeNode node)
+void travelBinaryTreeInMidorder(pBinaryTreeNode node)
 {
 	if(node){
-		travelBinaryTree(node->left);
+		travelBinaryTreeInMidorder(node->left);
 		printf("%d\t", node->data);
-		travelBinaryTree(node->right);
+		travelBinaryTreeInMidorder(node->right);
+	}
+}
+
+void travelBinaryTreeInLevel(pBinaryTreeNode node)
+{
+	if(node){
+		pQueueLinklist q = createQueueLinklist(-1);
+		int count_push = 0, count_pop = 0;
+		q->push(q, (void *)node);
+		count_push++;
+		count_pop = count_push;
+		pBinaryTreeNode tmp = NULL;
+		while(1){
+			tmp = q->pop(q);
+			if(tmp == NULL){
+				break;
+			}
+			count_pop--;
+			printf("%d\t", tmp->data);
+			if(tmp->left){
+				q->push(q, tmp->left);
+				count_push++;
+			}
+			if(tmp->right){
+				q->push(q, tmp->right);
+				count_push++;
+			}
+			if(count_pop == 0){
+				printf("\n");
+				count_pop = count_push;
+			}
+		}
+
 	}
 }

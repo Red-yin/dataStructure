@@ -14,7 +14,6 @@ int isFullInQueueLinklist(pQueueLinklist queue);
 int addToQueueLinklist(pQueueLinklist queue, void *data)
 {
 	if(1 == isFullInQueueLinklist(queue)){
-		printf("this queue is full already\n");
 		return -1;
 	}
 	pQueueNode tmp = (pQueueNode)malloc(sizeof(struct queueNode));
@@ -37,7 +36,6 @@ void *deleteFromQueueLinklist(pQueueLinklist queue)
 {
 	void *ret = NULL;
 	if(1 == isEmptyInQueueLinklist(queue)){
-		printf("this queue is empty\n");
 		return NULL;
 	}
 	ret = queue->front->data;
@@ -85,3 +83,11 @@ pQueueLinklist createQueueLinklist(int max)
 	return queue;
 }
 
+void destoryQueueLinklist(pQueueLinklist *queue)
+{
+	if(queue)
+		if(*queue){
+			free(*queue);
+			*queue = NULL;
+		}
+}

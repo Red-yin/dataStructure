@@ -107,7 +107,7 @@ int testBinaryTree()
 		printf("handle: %c, data: %d\n", handle, data);
 		switch(handle){
 			case 'p':
-				travelBinaryTree(tree->root);
+				travelBinaryTreeInLevel(tree->root);
 				printf("\n");
 				break;
 			case 'd':
