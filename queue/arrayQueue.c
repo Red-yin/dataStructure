@@ -4,7 +4,7 @@
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
-#include"queueByArray.h"
+#include"arrayQueue.h"
 
 int putInQueueArray(pQueueArray queue, int number, queueDataType *data);
 int getQueueArray(pQueueArray queue, int number, queueDataType *buf);

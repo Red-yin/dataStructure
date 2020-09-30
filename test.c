@@ -6,8 +6,8 @@
 #include<stdlib.h>
 #include"stackByArray.h"
 #include"stackByLinklist.h"
-#include"queueByArray.h"
-#include"queueByLinklist.h"
+#include"arrayQueue.h"
+#include"linklistQueue.h"
 #include"binaryTree.h"
 
 int testQueueLinklist()

@@ -4,7 +4,7 @@
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
-#include"stackByLinklist.h"
+#include"linklistStack.h"
 
 int isEmptyStackLinklist(pStackLinklist stack)
 {

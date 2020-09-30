@@ -4,7 +4,7 @@
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
-#include"stackByArray.h"
+#include"arrayStack.h"
 
 int popStackArray(pStackArray stack, stackDataType *buf);
 int pushStackArray(pStackArray stack, stackDataType data);

@@ -5,7 +5,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"binaryTree.h"
-#include"queueByLinklist.h"
+#include"linklistQueue.h"
 
 //检查二叉树的平衡，返回左子树的深度-右子树的深度
 int checkBinaryTreeBlance(pBinaryTreeNode node)

@@ -1,5 +1,9 @@
+
+ifeq ($(CC), )
+	CC = gcc -Werror
+endif
+
 OUT_DIR = out
-COMPILE_DIR = compile/
 TARGET = test
 SRC_DIR = ./stack 	\
 		  ./queue 	\
@@ -8,36 +12,38 @@ LIB_DIR = .
 BASE_LIB = libbase
 TARGET_STATIC_LIBS = $(BASE_LIB).a
 TARGET_SHARE_LIBS = $(BASE_LIB).so
-BASE_LIBS_FILES = queueByArray.c queueByLinklist.c stackByArray.c stackByLinklist.c binaryTree.c
+BASE_LIBS_FILES := $(foreach f, $(SRC_DIR), $(wildcard $(f)/*.c))
+OBJECT_FILES = $(patsubst %.c, %.o, $(BASE_LIBS_FILES))
+HEAD_FILES := $(foreach f, $(SRC_DIR), $(wildcard $(f)/*.h))
+HEAD_DIR = ./include
 CP = cp -r
-RM = rm -r
-CC = gcc -Werror
+RM = rm -rf
 AR = ar rcs
+
+INCLUDE = $(HEAD_DIR)
 
 VPATH = ./compile
 
 $(TARGET):$(BASE_LIB)
-	cd $(COMPILE_DIR);$(CC) -o $@ test.c -L$(LIB_DIR) -lbase -static
-	#cd $(COMPILE_DIR);$(CC) -o $@ test.c -L$(LIB_DIR) -lbase 
-	$(CP) $(COMPILE_DIR)$@ $(OUT_DIR)
+	$(CC) -o $@ test.c -L$(LIB_DIR) -lbase -static -I$(INCLUDE)
+	#$(CC) -o $@ test.c -L$(LIB_DIR) -lbase 
 
-$(TARGET_SHARE_LIBS):
-	cd $(COMPILE_DIR);$(CC) -shared -fPIC -o $@ $(BASE_LIBS_FILES) 
+$(TARGET_SHARE_LIBS):$(OBJECT_FILES)
+	$(CC) -shared -fPIC -o $@ $^ -I$(INCLUDE)
 
-$(TARGET_STATIC_LIBS):$(patsubst %.c, %.o, $(BASE_LIBS_FILES)) 
-	cd $(COMPILE_DIR);$(AR) $@ $^
+$(TARGET_STATIC_LIBS):$(OBJECT_FILES)
+	$(AR) $@ $^ -I$(INCLUDE)
 
-$(patsubst %.c, %.o, $(BASE_LIBS_FILES)): 
-	cd $(COMPILE_DIR);$(foreach f, $(patsubst %.c, %.o, $(BASE_LIBS_FILES)), $(CC) -c -o $(f) $(patsubst %.o, %.c, $(f));)
+$(OBJECT_FILES):
+	$(foreach f, $(patsubst %.c, %.o, $(BASE_LIBS_FILES)), $(CC) -c -o $(f) $(patsubst %.o, %.c, $(f)) -I$(INCLUDE);)
 
 $(BASE_LIB):init $(TARGET_SHARE_LIBS) $(TARGET_STATIC_LIBS)
 
 init:
-	mkdir -p $(COMPILE_DIR)
+	$(CP) $(HEAD_FILES) $(HEAD_DIR)
+	echo $(BASE_LIBS_FILES)
 	mkdir -p $(OUT_DIR)
-	#将所有源代码文件拷贝到compile目录
-	$(foreach d,$(SRC_DIR),$(CP) $(d)/*.c $(COMPILE_DIR);$(CP) $(d)/*.h $(COMPILE_DIR);)
-	$(CP) test.c $(COMPILE_DIR)
+	#$(foreach d,$(SRC_DIR),$(CP) $(d)/*.c $(COMPILE_DIR);$(CP) $(d)/*.h $(COMPILE_DIR);)
 
 clean:
-	$(RM) $(COMPILE_DIR) $(OUT_DIR)
+	$(RM) $(OUT_DIR) $(OBJECT_FILES)

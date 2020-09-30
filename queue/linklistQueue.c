@@ -4,7 +4,7 @@
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
-#include"queueByLinklist.h"
+#include"linklistQueue.h"
 
 int addToQueueLinklist(pQueueLinklist queue, void *data);
 void *deleteFromQueueLinklist(pQueueLinklist queue);
