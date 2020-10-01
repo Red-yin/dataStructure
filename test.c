@@ -4,11 +4,10 @@
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
-#include"stackByArray.h"
-#include"stackByLinklist.h"
+#include"arrayStack.h"
+#include"linklistStack.h"
 #include"arrayQueue.h"
 #include"linklistQueue.h"
-#include"binaryTree.h"
 
 int testQueueLinklist()
 {
@@ -94,38 +93,8 @@ int testStackLinklist()
 	return 0;
 }
 
-
-int testBinaryTree()
-{
-	printf("print tree: pp\ndelete node: d num\nadd node:anum\nquit: qq\n");
-	pBinaryTree tree = createBinaryTree();
-	char handle = 0;
-	int data = 0;
-	while(1){
-		printf("input:\n");
-		scanf("%c%d", &handle, &data);
-		printf("handle: %c, data: %d\n", handle, data);
-		switch(handle){
-			case 'p':
-				travelBinaryTreeInLevel(tree->root);
-				printf("\n");
-				travelBinaryTreeInMidorder(tree->root);
-				break;
-			case 'd':
-				deleteBinaryTreeNode(tree, data);
-				break;
-			case 'a':
-				insertBinaryTreeNode(tree, data);
-				break;
-			case 'q':
-				exit(0);
-				break;
-		}
-	}
-}
-
 int main()
 {
-	testBinaryTree();
+	testQueueLinklist();
 	return 0;
 }
