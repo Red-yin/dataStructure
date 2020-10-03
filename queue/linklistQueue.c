@@ -6,14 +6,14 @@
 #include<stdlib.h>
 #include"linklistQueue.h"
 
-int addToQueueLinklist(pQueueLinklist queue, void *data);
-void *deleteFromQueueLinklist(pQueueLinklist queue);
-int isEmptyInQueueLinklist(pQueueLinklist queue);
-int isFullInQueueLinklist(pQueueLinklist queue);
+int addToLinklistQueue(pLinklistQueue queue, void *data);
+void *deleteFromLinklistQueue(pLinklistQueue queue);
+int isEmptyInLinklistQueue(pLinklistQueue queue);
+int isFullInLinklistQueue(pLinklistQueue queue);
 
-int addToQueueLinklist(pQueueLinklist queue, void *data)
+int addToLinklistQueue(pLinklistQueue queue, void *data)
 {
-	if(1 == isFullInQueueLinklist(queue)){
+	if(1 == isFullInLinklistQueue(queue)){
 		return -1;
 	}
 	pQueueNode tmp = (pQueueNode)malloc(sizeof(struct queueNode));
@@ -32,10 +32,10 @@ int addToQueueLinklist(pQueueLinklist queue, void *data)
 	return 0;
 }
 
-void *deleteFromQueueLinklist(pQueueLinklist queue)
+void *deleteFromLinklistQueue(pLinklistQueue queue)
 {
 	void *ret = NULL;
-	if(1 == isEmptyInQueueLinklist(queue)){
+	if(1 == isEmptyInLinklistQueue(queue)){
 		return NULL;
 	}
 	ret = queue->front->data;
@@ -46,12 +46,12 @@ void *deleteFromQueueLinklist(pQueueLinklist queue)
 	return ret;
 }
 
-int isEmptyInQueueLinklist(pQueueLinklist queue)
+int isEmptyInLinklistQueue(pLinklistQueue queue)
 {
 	return (queue == NULL || queue->count == 0);
 }
 
-int isFullInQueueLinklist(pQueueLinklist queue)
+int isFullInLinklistQueue(pLinklistQueue queue)
 {
 	if(queue == NULL){
 		printf("queue is NULL\n");
@@ -60,7 +60,7 @@ int isFullInQueueLinklist(pQueueLinklist queue)
 	return queue->count == queue->max;
 }
 
-pQueueLinklist createQueueLinklist(int max)
+pLinklistQueue createLinklistQueue(int max)
 {
 	/*
 	if(max <= 0){
@@ -68,7 +68,7 @@ pQueueLinklist createQueueLinklist(int max)
 		return NULL;
 	}
 	*/
-	pQueueLinklist queue = (pQueueLinklist)malloc(sizeof(struct queueLinklist));
+	pLinklistQueue queue = (pLinklistQueue)malloc(sizeof(struct linklistQueue));
 	if(queue == NULL){
 		printf("no memory when create queue\n");
 		return NULL;
@@ -76,14 +76,14 @@ pQueueLinklist createQueueLinklist(int max)
 	queue->max = max;
 	queue->count = 0;
 	queue->front = queue->rear = NULL;
-	queue->push = addToQueueLinklist;
-	queue->pop = deleteFromQueueLinklist;
-	queue->isEmpty = isEmptyInQueueLinklist;
-	queue->isFull = isFullInQueueLinklist;
+	queue->push = addToLinklistQueue;
+	queue->pop = deleteFromLinklistQueue;
+	queue->isEmpty = isEmptyInLinklistQueue;
+	queue->isFull = isFullInLinklistQueue;
 	return queue;
 }
 
-void destoryQueueLinklist(pQueueLinklist *queue)
+void destoryLinklistQueue(pLinklistQueue *queue)
 {
 	if(queue)
 		if(*queue){

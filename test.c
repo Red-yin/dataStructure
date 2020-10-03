@@ -1,34 +1,80 @@
 /*************************************************************************
-	> c File Name: test.c
-	> c Created Time: 2020年05月18日 星期一 17时39分06秒
+  > c File Name: test.c
+  > c Created Time: 2020年05月18日 星期一 17时39分06秒
  ************************************************************************/
 #include<stdio.h>
+#include<unistd.h>
 #include<stdlib.h>
 #include"arrayStack.h"
 #include"linklistStack.h"
 #include"arrayQueue.h"
 #include"linklistQueue.h"
+#include <pthread.h>
 
-int testQueueLinklist()
+struct pt_param{
+	int pt_index;
+	void *run_param;
+};
+int testNum = 0;
+void *queueAdd(void *param)
 {
-	pQueueLinklist q = createQueueLinklist(100);
+	static int count = 0;
+	struct pt_param *pm = (struct pt_param *)param;
+	pLinklistQueue q = (pLinklistQueue)pm->run_param;
+	while(count < 1000){
+		q->push(q, (void *)testNum);
+		printf("thread[%d] queue add: %d\n", pm->pt_index, testNum);
+		testNum++;
+		count++;
+	}
+	printf("thread[%d] quit\n", pm->pt_index);
+	return NULL;
+}
+
+int testLinklistQueueAdd(pLinklistQueue q)
+{
+	pthread_t pt[10];
+	struct pt_param param[10];
 	int i = 0;
-	for(;i < 200; i++){
-		int *d = (int *)malloc(sizeof(int));
-		*d = i;
-		if(q->push(q, d) < 0){
-			free(d);
+	for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
+		param[i].pt_index = i;
+		param[i].run_param = (void *)q;
+		pthread_create(&pt[i], NULL, queueAdd, (void *)&param[i]);
+	}
+	while(1){
+		if(q->isEmpty(q) == 0){
+			int d = (int)q->pop(q);
+			printf("queue get: %d\n", d);
+		}else{
+			usleep(10*1000);
 		}
 	}
-	for(i = 0;i < 200; i++){
-		void *d = NULL;
-		if((d = q->pop(q)) != NULL){
-			printf("data is %d\n", *(int *)d);
-			free(d);
+}
+#define MAX 10000000
+int testLinklistQueue()
+{
+	pLinklistQueue q = createLinklistQueue(MAX);
+#if 0
+	testLinklistQueueAdd(q);
+#else
+	while(1){
+		int i = 0;
+		printf("queue put:\n");
+		for(;i < MAX; i++){
+			q->push(q, (void *)i);
+			printf("%d ", i);
 		}
+		printf("\nqueue get:\n");
+		while(q->isEmpty(q) == 0){
+			int d = (int)q->pop(q);
+			printf("%d ", d);
+		}
+		printf("\n");
+		sleep(3);
 	}
+#endif
 	return 0;
-	
+
 }
 int testQueueArray()
 {
@@ -95,6 +141,6 @@ int testStackLinklist()
 
 int main()
 {
-	testQueueLinklist();
+	testLinklistQueue();
 	return 0;
 }

@@ -8,16 +8,16 @@ typedef struct queueNode{
 	struct queueNode *next;
 }*pQueueNode;
 
-typedef struct queueLinklist{
+typedef struct linklistQueue{
 	int max;			//队列的容量
 	unsigned int count;	//队列当前数据量
 	pQueueNode front;	//队列数据头，从这里取出数据
 	pQueueNode rear;	//队列数据尾，从这里加入数据
-	int (*push)(struct queueLinklist *queue, void *data);
-	void *(*pop)(struct queueLinklist *queue);
-	int (*isEmpty)(struct queueLinklist *queue);
-	int (*isFull)(struct queueLinklist *queue);
-}*pQueueLinklist;
+	int (*push)(struct linklistQueue *queue, void *data);
+	void *(*pop)(struct linklistQueue *queue);
+	int (*isEmpty)(struct linklistQueue *queue);
+	int (*isFull)(struct linklistQueue *queue);
+}*pLinklistQueue;
 
-pQueueLinklist createQueueLinklist(int max);
-void destoryQueueLinklist(pQueueLinklist *queue);
+pLinklistQueue createLinklistQueue(int max);
+void destoryLinklistQueue(pLinklistQueue *queue);

@@ -9,7 +9,7 @@ SRC_DIR = ./stack 	\
 		  ./queue 	\
 		  ./tree
 LIB_DIR = .
-BASE_LIB = libbase
+BASE_LIB = libdataStructure
 TARGET_STATIC_LIBS = $(BASE_LIB).a
 TARGET_SHARE_LIBS = $(BASE_LIB).so
 BASE_LIBS_FILES := $(foreach f, $(SRC_DIR), $(wildcard $(f)/*.c))
@@ -28,7 +28,7 @@ VPATH = ./compile
 
 $(TARGET):$(BASE_LIB)
 	#$(CC) -o $@ test.c -L$(LIB_DIR) -lbase -static -I$(INCLUDE)
-	$(CC) -o $@ test.c -L$(LIB_DIR) -lbase $(INCLUDE)
+	$(CC) -o $@ test.c -L$(LIB_DIR) -ldataStructure $(INCLUDE) -lpthread
 
 $(TARGET_SHARE_LIBS):$(OBJECT_FILES)
 	$(CC) -shared -o $@ $^
