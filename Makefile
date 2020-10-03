@@ -46,6 +46,8 @@ $(BASE_LIB):init $(TARGET_SHARE_LIBS) $(TARGET_STATIC_LIBS) end
 end:
 	$(CP) $(TARGET_SHARE_LIBS) $(OUT_DIR)
 	$(CP) $(TARGET_STATIC_LIBS) $(OUT_DIR)
+	mkdir -p $(OUT_DIR)/include
+	$(CP) $(LOCAL_HEAD_DIR)/*.h $(OUT_DIR)/include
 
 init:
 	echo $(INCLUDE)
