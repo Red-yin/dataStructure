@@ -3,6 +3,7 @@
   > c Created Time: 2020年05月18日 星期一 17时39分06秒
  ************************************************************************/
 #include<stdio.h>
+#include<string.h>
 #include<unistd.h>
 #include<stdlib.h>
 #include"arrayStack.h"
@@ -11,6 +12,7 @@
 #include"linklistQueue.h"
 #include <pthread.h>
 
+#define MAX 5
 struct pt_param{
 	int pt_index;
 	void *run_param;
@@ -33,28 +35,33 @@ void *queueAdd(void *param)
 
 int testLinklistQueueAdd(pLinklistQueue q)
 {
-	pthread_t pt[10];
-	struct pt_param param[10];
+	pthread_t pt[MAX];
+	struct pt_param param[MAX];
 	int i = 0;
 	for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
 		param[i].pt_index = i;
 		param[i].run_param = (void *)q;
 		pthread_create(&pt[i], NULL, queueAdd, (void *)&param[i]);
 	}
+
 	while(1){
+		FILE *fp = fopen("./result.txt", "a");
 		if(q->isEmpty(q) == 0){
 			int d = (int)q->pop(q);
 			printf("queue get: %d\n", d);
+			char buf[8] = {0};
+			sprintf(buf, "%d\n", d);
+			fwrite(buf, 1, strlen(buf), fp);
 		}else{
 			usleep(10*1000);
 		}
+		fclose(fp);
 	}
 }
-#define MAX 10000000
 int testLinklistQueue()
 {
-	pLinklistQueue q = createLinklistQueue(MAX);
-#if 0
+	pLinklistQueue q = createLinklistQueue(-1);
+#if 1
 	testLinklistQueueAdd(q);
 #else
 	while(1){

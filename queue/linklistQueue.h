@@ -3,6 +3,7 @@
 	>c++ Created Time: 2020年05月12日 星期二 16时19分27秒
  ************************************************************************/
 
+#include <pthread.h>
 typedef struct queueNode{
 	void *data;
 	struct queueNode *next;
@@ -13,6 +14,7 @@ typedef struct linklistQueue{
 	unsigned int count;	//队列当前数据量
 	pQueueNode front;	//队列数据头，从这里取出数据
 	pQueueNode rear;	//队列数据尾，从这里加入数据
+	pthread_mutex_t mutex;
 	int (*push)(struct linklistQueue *queue, void *data);
 	void *(*pop)(struct linklistQueue *queue);
 	int (*isEmpty)(struct linklistQueue *queue);

@@ -23,12 +23,14 @@ int addToLinklistQueue(pLinklistQueue queue, void *data)
 	}
 	tmp->next = NULL;
 	tmp->data = data;
+	pthread_mutex_lock(&queue->mutex);
 	if(queue->rear)
 		queue->rear->next = tmp;
 	queue->rear = tmp;
 	queue->count++;
 	if(queue->front == NULL)
 		queue->front = tmp;
+	pthread_mutex_unlock(&queue->mutex);
 	return 0;
 }
 
@@ -38,11 +40,13 @@ void *deleteFromLinklistQueue(pLinklistQueue queue)
 	if(1 == isEmptyInLinklistQueue(queue)){
 		return NULL;
 	}
+	pthread_mutex_lock(&queue->mutex);
 	ret = queue->front->data;
 	pQueueNode tmp = queue->front;
 	queue->front = queue->front->next;
 	queue->count--;
 	free(tmp);
+	pthread_mutex_unlock(&queue->mutex);
 	return ret;
 }
 
@@ -80,6 +84,7 @@ pLinklistQueue createLinklistQueue(int max)
 	queue->pop = deleteFromLinklistQueue;
 	queue->isEmpty = isEmptyInLinklistQueue;
 	queue->isFull = isFullInLinklistQueue;
+	pthread_mutex_init(&queue->mutex, NULL);
 	return queue;
 }
 
@@ -87,6 +92,7 @@ void destoryLinklistQueue(pLinklistQueue *queue)
 {
 	if(queue)
 		if(*queue){
+			pthread_mutex_destroy(&(*queue)->mutex);
 			free(*queue);
 			*queue = NULL;
 		}
