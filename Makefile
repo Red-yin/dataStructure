@@ -41,7 +41,11 @@ $(OBJECT_FILES):
 	#在将.c文件编译.o文件的时候，都加上-fPIC，这样才能编译出动态库来，在链接打包生成库文件时这个参数是无效甚至非法的
 	$(foreach f, $(patsubst %.c, %.o, $(BASE_LIBS_FILES)), $(CC) -c -o $(f) $(patsubst %.o, %.c, $(f)) -fPIC $(INCLUDE);)
 
-$(BASE_LIB):init $(TARGET_SHARE_LIBS) $(TARGET_STATIC_LIBS)
+$(BASE_LIB):init $(TARGET_SHARE_LIBS) $(TARGET_STATIC_LIBS) end
+
+end:
+	$(CP) $(TARGET_SHARE_LIBS) $(OUT_DIR)
+	$(CP) $(TARGET_STATIC_LIBS) $(OUT_DIR)
 
 init:
 	echo $(INCLUDE)
