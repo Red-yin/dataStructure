@@ -19,7 +19,9 @@ typedef struct linklistQueue{
 	void *(*pop)(struct linklistQueue *queue);
 	int (*isEmpty)(struct linklistQueue *queue);
 	int (*isFull)(struct linklistQueue *queue);
+	void (*clean)(struct linklistQueue *queue);
+	void (*destoryData)(void *data);
 }*pLinklistQueue;
 
-pLinklistQueue createLinklistQueue(int max);
-void destoryLinklistQueue(pLinklistQueue *queue);
+pLinklistQueue createLinklistQueue(int max, void (*destoryData)(void *data));
+void destoryLinklistQueue(pLinklistQueue queue);

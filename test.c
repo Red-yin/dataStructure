@@ -18,18 +18,20 @@ struct pt_param{
 	void *run_param;
 };
 int testNum = 0;
+static int count = 0;
 void *queueAdd(void *param)
 {
-	static int count = 0;
+	pthread_detach(pthread_self());
 	struct pt_param *pm = (struct pt_param *)param;
 	pLinklistQueue q = (pLinklistQueue)pm->run_param;
-	while(count < 1000){
+	while(count < 10000){
 		q->push(q, (void *)testNum);
 		printf("thread[%d] queue add: %d\n", pm->pt_index, testNum);
 		testNum++;
 		count++;
 	}
 	printf("thread[%d] quit\n", pm->pt_index);
+	pm->pt_index = -1;
 	return NULL;
 }
 
@@ -37,6 +39,7 @@ int testLinklistQueueAdd(pLinklistQueue q)
 {
 	pthread_t pt[MAX];
 	struct pt_param param[MAX];
+	count = 0;
 	int i = 0;
 	for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
 		param[i].pt_index = i;
@@ -44,6 +47,20 @@ int testLinklistQueueAdd(pLinklistQueue q)
 		pthread_create(&pt[i], NULL, queueAdd, (void *)&param[i]);
 	}
 
+	while(1){
+		int flag = 1;
+		for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
+			if(param[i].pt_index == -1){
+				flag = 0;
+			}else{
+				flag = 1;
+				break;
+			}
+		}
+		if(flag == 0)
+			break;
+	}
+#if 0
 	while(1){
 		FILE *fp = fopen("./result.txt", "a");
 		if(q->isEmpty(q) == 0){
@@ -57,27 +74,36 @@ int testLinklistQueueAdd(pLinklistQueue q)
 		}
 		fclose(fp);
 	}
+#endif
 }
 int testLinklistQueue()
 {
-	pLinklistQueue q = createLinklistQueue(-1);
 #if 1
-	testLinklistQueueAdd(q);
+	while(1){
+		pLinklistQueue q = createLinklistQueue(-1, NULL);
+		testLinklistQueueAdd(q);
+		destoryLinklistQueue(q);
+		sleep(1);
+	}
 #else
 	while(1){
+		pLinklistQueue q = createLinklistQueue(-1, NULL);
 		int i = 0;
 		printf("queue put:\n");
-		for(;i < MAX; i++){
+		for(;i < 10000; i++){
 			q->push(q, (void *)i);
 			printf("%d ", i);
 		}
+		destoryLinklistQueue(q);
+#if 0
 		printf("\nqueue get:\n");
 		while(q->isEmpty(q) == 0){
 			int d = (int)q->pop(q);
 			printf("%d ", d);
 		}
+#endif
 		printf("\n");
-		sleep(3);
+		sleep(1);
 	}
 #endif
 	return 0;

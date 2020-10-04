@@ -1,6 +1,6 @@
 /*************************************************************************
-	> c File Name: queueByLinklist.c
-	> c Created Time: 2020年05月12日 星期二 16时19分18秒
+  > c File Name: queueByLinklist.c
+  > c Created Time: 2020年05月12日 星期二 16时19分18秒
  ************************************************************************/
 #include<stdio.h>
 #include<stdlib.h>
@@ -10,6 +10,40 @@ int addToLinklistQueue(pLinklistQueue queue, void *data);
 void *deleteFromLinklistQueue(pLinklistQueue queue);
 int isEmptyInLinklistQueue(pLinklistQueue queue);
 int isFullInLinklistQueue(pLinklistQueue queue);
+void cleanLinklistQueue(pLinklistQueue queue);
+
+void destoryQueueNode(pQueueNode node)
+{
+	if(node != NULL){
+		free(node);
+	}
+}
+
+void cleanLinklistQueue(pLinklistQueue queue)
+{
+	if(1 == isEmptyInLinklistQueue(queue)){
+		return ;
+	}
+	void *data = NULL;
+	pthread_mutex_lock(&queue->mutex);
+	pQueueNode tmp = queue->front;
+	while(tmp != NULL){
+		data = queue->front->data;
+		if(queue->destoryData != NULL){
+			queue->destoryData(data);
+		}
+		queue->front = queue->front->next;
+		destoryQueueNode(tmp);
+		queue->count--;
+		//printf("delete left: %d\n", queue->count);
+		tmp = queue->front;
+	}
+	if(queue->count != 0){
+		printf("WARNING: queue count is not 0\n");
+	}
+	queue->count = 0;
+	pthread_mutex_unlock(&queue->mutex);
+}
 
 int addToLinklistQueue(pLinklistQueue queue, void *data)
 {
@@ -45,7 +79,7 @@ void *deleteFromLinklistQueue(pLinklistQueue queue)
 	pQueueNode tmp = queue->front;
 	queue->front = queue->front->next;
 	queue->count--;
-	free(tmp);
+	destoryQueueNode(tmp);
 	pthread_mutex_unlock(&queue->mutex);
 	return ret;
 }
@@ -64,14 +98,14 @@ int isFullInLinklistQueue(pLinklistQueue queue)
 	return queue->count == queue->max;
 }
 
-pLinklistQueue createLinklistQueue(int max)
+pLinklistQueue createLinklistQueue(int max, void (*destoryData)(void *data))
 {
 	/*
-	if(max <= 0){
-		printf("max num must > 0\n");
-		return NULL;
-	}
-	*/
+	   if(max <= 0){
+	   printf("max num must > 0\n");
+	   return NULL;
+	   }
+	   */
 	pLinklistQueue queue = (pLinklistQueue)malloc(sizeof(struct linklistQueue));
 	if(queue == NULL){
 		printf("no memory when create queue\n");
@@ -84,16 +118,17 @@ pLinklistQueue createLinklistQueue(int max)
 	queue->pop = deleteFromLinklistQueue;
 	queue->isEmpty = isEmptyInLinklistQueue;
 	queue->isFull = isFullInLinklistQueue;
+	queue->clean = cleanLinklistQueue;
+	queue->destoryData = destoryData;
 	pthread_mutex_init(&queue->mutex, NULL);
 	return queue;
 }
 
-void destoryLinklistQueue(pLinklistQueue *queue)
+void destoryLinklistQueue(pLinklistQueue queue)
 {
-	if(queue)
-		if(*queue){
-			pthread_mutex_destroy(&(*queue)->mutex);
-			free(*queue);
-			*queue = NULL;
-		}
+	if(queue){
+		cleanLinklistQueue(queue);
+		pthread_mutex_destroy(&queue->mutex);
+		free(queue);
+	}
 }
