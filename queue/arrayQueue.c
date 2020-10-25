@@ -8,8 +8,8 @@
 
 int putInArrayQueue(pArrayQueue queue, int number, queueDataType *data);
 int getArrayQueue(pArrayQueue queue, int number, queueDataType *buf);
-int isEmptyArrayQueue(pArrayQueue queue);
-int isFullArrayQueue(pArrayQueue queue);
+inline int isEmptyArrayQueue(pArrayQueue queue);
+inline int isFullArrayQueue(pArrayQueue queue);
 
 int putInArrayQueueCover(pArrayQueue queue, int number, queueDataType *data)
 {
@@ -48,15 +48,17 @@ int putInArrayQueue(pArrayQueue queue, int number, queueDataType *data)
 		printf("queue left space < number, put data failed\n");
 		goto end;
 	}
-	int i = 0;
+	int i = 0, rear = queue->rear, count = queue->count;
 	for(; i < number; i++){
-		queue->data[queue->rear] = data[i];
-		queue->rear++;
-		queue->count++;
-		if(queue->rear == queue->max){
-			queue->rear = 0;
+		queue->data[rear] = data[i];
+		rear++;
+		count++;
+		if(rear == queue->max){
+			rear = 0;
 		}
 	}
+	queue->rear = rear;
+	queue->count = count;
 end:
 	pthread_mutex_unlock(&queue->mutex);
 	pthread_cond_signal(&queue->cond);
