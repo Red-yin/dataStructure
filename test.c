@@ -111,7 +111,7 @@ int testLinklistQueue()
 }
 int testQueueArray()
 {
-	pQueueArray q = createQueueArray(15);
+	pArrayQueue q = createArrayQueue(15);
 	int i = 0;
 	for(;i < 20; i++){
 		if(q->push(q, 1, &i) < 0){
