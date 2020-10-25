@@ -11,14 +11,21 @@
 #include"arrayQueue.h"
 #include"linklistQueue.h"
 #include <pthread.h>
+#include <sys/time.h>
 
-#define MAX 5
+#define MAX 3
 struct pt_param{
 	int pt_index;
 	void *run_param;
 };
 int testNum = 0;
 static int count = 0;
+
+int getNum()
+{
+	testNum++;
+	return testNum;
+}
 void *queueAdd(void *param)
 {
 	pthread_detach(pthread_self());
@@ -35,18 +42,19 @@ void *queueAdd(void *param)
 	return NULL;
 }
 
-int testLinklistQueueAdd(pLinklistQueue q)
+int multiThreadTest(void *run_param, void *(run_routine)(void *param))
 {
 	pthread_t pt[MAX];
-	struct pt_param param[MAX];
+	struct pt_param *param = (struct pt_param *)calloc(MAX, sizeof(struct pt_param));
 	count = 0;
 	int i = 0;
 	for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
 		param[i].pt_index = i;
-		param[i].run_param = (void *)q;
-		pthread_create(&pt[i], NULL, queueAdd, (void *)&param[i]);
+		param[i].run_param = run_param;
+		pthread_create(&pt[i], NULL, run_routine, (void *)&param[i]);
 	}
-
+}
+#if 0
 	while(1){
 		int flag = 1;
 		for(i = 0; i < sizeof(pt)/sizeof(pthread_t *); i++){
@@ -60,7 +68,7 @@ int testLinklistQueueAdd(pLinklistQueue q)
 		if(flag == 0)
 			break;
 	}
-#if 0
+
 	while(1){
 		FILE *fp = fopen("./result.txt", "a");
 		if(q->isEmpty(q) == 0){
@@ -75,13 +83,12 @@ int testLinklistQueueAdd(pLinklistQueue q)
 		fclose(fp);
 	}
 #endif
-}
 int testLinklistQueue()
 {
 #if 1
 	while(1){
 		pLinklistQueue q = createLinklistQueue(-1, NULL);
-		testLinklistQueueAdd(q);
+		multiThreadTest((void *)q, queueAdd);
 		destoryLinklistQueue(q);
 		sleep(1);
 	}
@@ -107,30 +114,59 @@ int testLinklistQueue()
 	}
 #endif
 	return 0;
-
 }
-int testQueueArray()
+
+void *arrayQueueAddData(void *param)
 {
-	pArrayQueue q = createArrayQueue(15);
 	int i = 0;
-	for(;i < 20; i++){
-		if(q->push(q, 1, &i) < 0){
+	printf("[%s %d]\n", __FILE__, __LINE__);
+	struct pt_param *pm = (struct pt_param *)param;
+	printf("thread: %d\n", pm->pt_index);
+	pArrayQueue q = (pArrayQueue)pm->run_param;
+	while(1){
+		i = getNum();
+		if(q->push_cover(q, 1, &i) < 0){
 			printf("%d put failed\n", i);
+		}else{
+			printf("push: %d\n", i);
 		}
 	}
-	int n = 100;
-	queueDataType buf[n];
-	while(1){
-		if(0 >= q->pop(q, 10, buf))
-			break;
-		else
-			for(i = 0; i < 10; i++)
-				printf("get %d\n", buf[i]);
-	}
-	return 0;
-
-
+	return NULL;
 }
+
+int testArrayQueue()
+{
+	printf("[%s %d]\n", __FILE__, __LINE__);
+	pArrayQueue q = createArrayQueue(1024*1024);
+	//multiThreadTest((void *)q, arrayQueueAddData);
+	printf("[%s %d]\n", __FILE__, __LINE__);
+	queueDataType buf[300*1024];
+	printf("[%s %d]\n", __FILE__, __LINE__);
+	int i = 0, n = sizeof(buf)/sizeof(queueDataType);
+	memset(buf, 0, sizeof(buf));
+	printf("[%s %d]\n", __FILE__, __LINE__);
+	long long gap = 0;
+	for(int j = 0; j < 100; j++){
+		for(i = 0; i < n; i++){
+			buf[i] = i;
+		}
+		struct timeval start, end;
+		gettimeofday(&start, NULL);
+		//printf("start : %ld.%ld\n", start.tv_sec, start.tv_usec);
+		q->push_cover(q, n, buf);
+		gettimeofday(&end, NULL);
+		//printf("end   : %ld.%ld\n", end.tv_sec, end.tv_usec);
+		long t = (end.tv_sec - start.tv_sec)*1000000 + (end.tv_usec - start.tv_usec);
+		//printf("time gap: %ld\n", t);
+		gap += t;
+	}
+	printf("time sum gap: %lld\n", gap);
+		//q->pop_block(q, n, buf);
+	//}
+
+	return 0;
+}
+
 int testStackArray()
 {
 	pStackArray stack = createStackArray(10);
@@ -174,6 +210,7 @@ int testStackLinklist()
 
 int main()
 {
-	testLinklistQueue();
+	//testLinklistQueue();
+	testArrayQueue();
 	return 0;
 }

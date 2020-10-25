@@ -65,7 +65,25 @@ int addToLinklistQueue(pLinklistQueue queue, void *data)
 	if(queue->front == NULL)
 		queue->front = tmp;
 	pthread_mutex_unlock(&queue->mutex);
+	pthread_cond_signal(&queue->cond);
 	return 0;
+}
+
+void *deleteFromLinklistQueueBlock(pLinklistQueue queue)
+{
+	void *ret = NULL;
+	pthread_mutex_lock(&queue->mutex);
+	if(0 != isEmptyInLinklistQueue(queue)){
+		printf("queue is empty, waiting...\n");
+		pthread_cond_wait(&queue->cond, &queue->mutex);
+	}
+	ret = queue->front->data;
+	pQueueNode tmp = queue->front;
+	queue->front = queue->front->next;
+	queue->count--;
+	destoryQueueNode(tmp);
+	pthread_mutex_unlock(&queue->mutex);
+	return ret;
 }
 
 void *deleteFromLinklistQueue(pLinklistQueue queue)
@@ -116,6 +134,7 @@ pLinklistQueue createLinklistQueue(int max, void (*destoryData)(void *data))
 	queue->front = queue->rear = NULL;
 	queue->push = addToLinklistQueue;
 	queue->pop = deleteFromLinklistQueue;
+	queue->pop_block = deleteFromLinklistQueueBlock;
 	queue->isEmpty = isEmptyInLinklistQueue;
 	queue->isFull = isFullInLinklistQueue;
 	queue->clean = cleanLinklistQueue;

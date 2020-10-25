@@ -15,13 +15,15 @@ typedef struct linklistQueue{
 	pQueueNode front;	//队列数据头，从这里取出数据
 	pQueueNode rear;	//队列数据尾，从这里加入数据
 	pthread_mutex_t mutex;
+	pthread_cond_t cond;
 	int (*push)(struct linklistQueue *queue, void *data);
 	void *(*pop)(struct linklistQueue *queue);
+	void *(*pop_block)(struct linklistQueue *queue);
 	int (*isEmpty)(struct linklistQueue *queue);
 	int (*isFull)(struct linklistQueue *queue);
 	void (*clean)(struct linklistQueue *queue);
 	void (*destoryData)(void *data);
-}*pLinklistQueue;
+}linklistQueue, *pLinklistQueue;
 
 pLinklistQueue createLinklistQueue(int max, void (*destoryData)(void *data));
 void destoryLinklistQueue(pLinklistQueue queue);

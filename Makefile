@@ -27,8 +27,8 @@ INCLUDE += -I$(LOCAL_HEAD_DIR)
 VPATH = ./compile
 
 $(TARGET):$(BASE_LIB)
-	#$(CC) -o $@ test.c -L$(LIB_DIR) -lbase -static -I$(INCLUDE)
-	$(CC) -o $@ test.c -L$(LIB_DIR) -ldataStructure $(INCLUDE) -lpthread
+	$(CC) -o $@ test.c -L$(LIB_DIR) -ldataStructure -static -I$(INCLUDE) -lpthread
+	#$(CC) -o $@ test.c -L$(LIB_DIR) -ldataStructure $(INCLUDE) -lpthread
 
 $(TARGET_SHARE_LIBS):$(OBJECT_FILES)
 	$(CC) -shared -o $@ $^

@@ -11,6 +11,32 @@ int getArrayQueue(pArrayQueue queue, int number, queueDataType *buf);
 int isEmptyArrayQueue(pArrayQueue queue);
 int isFullArrayQueue(pArrayQueue queue);
 
+int putInArrayQueueCover(pArrayQueue queue, int number, queueDataType *data)
+{
+	pthread_mutex_lock(&queue->mutex);
+	int i = 0, rear = queue->rear, count = queue->count;
+	for(; i < number; i++){
+		queue->data[rear] = data[i];
+		rear++;
+		count++;
+		if(rear == queue->max){
+			rear = 0;
+		}
+	}
+	queue->rear = rear;
+	queue->count = count;
+	if(1 == isFullArrayQueue(queue)){
+		//printf("cover data in queue %d bytes\n", queue->count-queue->max);
+		queue->front = queue->rear;
+		queue->count = queue->max;
+	}
+end:
+	pthread_mutex_unlock(&queue->mutex);
+	pthread_cond_signal(&queue->cond);
+	return 0;
+
+}
+
 int putInArrayQueue(pArrayQueue queue, int number, queueDataType *data)
 {
 	if(1 == isFullArrayQueue(queue)){
@@ -33,9 +59,29 @@ int putInArrayQueue(pArrayQueue queue, int number, queueDataType *data)
 	}
 end:
 	pthread_mutex_unlock(&queue->mutex);
+	pthread_cond_signal(&queue->cond);
 	return 0;
 }
 
+int getArrayQueueBlock(pArrayQueue queue, int number, queueDataType *buf)
+{
+	int i = 0;
+	pthread_mutex_lock(&queue->mutex);
+	if(0 != isEmptyArrayQueue(queue)){
+		printf("queue is empty, waiting...\n");
+		pthread_cond_wait(&queue->cond, &queue->mutex);
+	}
+	int max = number < queue->count ? number: queue->count;
+	for(; i < max; i++){
+		buf[i] = queue->data[queue->front];
+		queue->front++;
+		queue->count--;
+		if(queue->front == queue->max)
+			queue->front = 0;
+	}
+	pthread_mutex_unlock(&queue->mutex);
+	return i;
+}
 int getArrayQueue(pArrayQueue queue, int number, queueDataType *buf)
 {
 	if(1 == isEmptyArrayQueue(queue)){
@@ -44,14 +90,13 @@ int getArrayQueue(pArrayQueue queue, int number, queueDataType *buf)
 	}
 	int i = 0;
 	pthread_mutex_lock(&queue->mutex);
-	for(; i < number; i++){
+	int max = number < queue->count ? number: queue->count;
+	for(; i < max; i++){
 		buf[i] = queue->data[queue->front];
 		queue->front++;
 		queue->count--;
 		if(queue->front == queue->max)
 			queue->front = 0;
-		if(queue->count == 0)
-			break;
 	}
 	pthread_mutex_unlock(&queue->mutex);
 	return i;
@@ -74,7 +119,7 @@ int isEmptyArrayQueue(pArrayQueue queue)
 
 int isFullArrayQueue(pArrayQueue queue)
 {
-	return queue->count == queue->max;
+	return queue->count >= queue->max;
 }
 
 pArrayQueue createArrayQueue(int max)
@@ -98,8 +143,11 @@ pArrayQueue createArrayQueue(int max)
 		return NULL;
 	}
 	pthread_mutex_init(&queue->mutex, NULL);
+	pthread_cond_init(&queue->cond, NULL);
 	queue->push = putInArrayQueue;
+	queue->push_cover = putInArrayQueueCover;
 	queue->pop = getArrayQueue;
+	queue->pop_block = getArrayQueueBlock;
 	queue->clean = cleanArrayQueue;
 	queue->isEmpty = isEmptyArrayQueue;
 	queue->isFull = isFullArrayQueue;
@@ -112,6 +160,8 @@ void destoryArrayQueue(pArrayQueue queue)
 		if(queue->data){
 			free(queue->data);
 		}
+		pthread_cond_broadcast(&queue->cond);
+		pthread_cond_destroy(&queue->cond);
 		pthread_mutex_destroy(&queue->mutex);
 		free(queue);
 	}
